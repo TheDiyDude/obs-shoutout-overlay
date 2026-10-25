@@ -1,0 +1,2 @@
+# obs-shoutout-overlay
+TEST
