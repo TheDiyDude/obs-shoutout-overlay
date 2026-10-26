@@ -1,0 +1,161 @@
+{
+  "_note": "Excerpt of an OBS scene collection: browser source Shoutout-Overlay, scene _Shoutout and where it is used in the original setup – for reference. / Auszug aus der OBS-Szenensammlung, als Vorlage.",
+  "sources": [
+    {
+      "prev_ver": 537001986,
+      "name": "Shoutout-Overlay",
+      "uuid": "0eeab5bd-862d-4d3d-b5c8-7ab870fc86c3",
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "settings": {
+        "is_local_file": true,
+        "local_file": "C:/Streaming/shoutout/shoutout.html",
+        "url": "",
+        "width": 760,
+        "height": 640,
+        "fps_custom": false,
+        "shutdown": false,
+        "restart_when_active": false,
+        "css": "",
+        "reroute_audio": true
+      },
+      "mixers": 255,
+      "sync": 0,
+      "flags": 0,
+      "volume": 0.1702321618795395,
+      "balance": 0.5,
+      "enabled": true,
+      "muted": false,
+      "push-to-mute": false,
+      "push-to-mute-delay": 0,
+      "push-to-talk": false,
+      "push-to-talk-delay": 0,
+      "hotkeys": {
+        "libobs.mute": [],
+        "libobs.unmute": [],
+        "libobs.push-to-mute": [],
+        "libobs.push-to-talk": [],
+        "ObsBrowser.Refresh": []
+      },
+      "deinterlace_mode": 0,
+      "deinterlace_field_order": 0,
+      "monitoring_type": 2,
+      "private_settings": {}
+    },
+    {
+      "prev_ver": 537001986,
+      "name": "_Shoutout",
+      "uuid": "5824cd56-7e1f-4d01-b272-c1d51c36d006",
+      "id": "scene",
+      "versioned_id": "scene",
+      "settings": {
+        "id_counter": 1,
+        "custom_size": false,
+        "items": [
+          {
+            "name": "Shoutout-Overlay",
+            "source_uuid": "0eeab5bd-862d-4d3d-b5c8-7ab870fc86c3",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "scale_ref": {
+              "x": 1920.0,
+              "y": 1080.0
+            },
+            "align": 5,
+            "bounds_type": 0,
+            "bounds_align": 0,
+            "bounds_crop": false,
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "pos": {
+              "x": 1180.0,
+              "y": 227.0
+            },
+            "pos_rel": {
+              "x": 0.40740740299224854,
+              "y": -0.57962965965271
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "scale_rel": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "bounds_rel": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ]
+      },
+      "mixers": 0,
+      "sync": 0,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "enabled": true,
+      "muted": false,
+      "push-to-mute": false,
+      "push-to-mute-delay": 0,
+      "push-to-talk": false,
+      "push-to-talk-delay": 0,
+      "hotkeys": {
+        "OBSBasic.SelectScene": [],
+        "libobs.show_scene_item.1": [],
+        "libobs.hide_scene_item.1": []
+      },
+      "deinterlace_mode": 0,
+      "deinterlace_field_order": 0,
+      "monitoring_type": 0,
+      "canvas_uuid": "6c69626f-6273-4c00-9d88-c5136d61696e",
+      "private_settings": {}
+    }
+  ],
+  "eingebunden_in": [
+    {
+      "szene": "IRL-Live",
+      "pos": {
+        "x": 0.0,
+        "y": 100.0
+      },
+      "visible": true
+    },
+    {
+      "szene": "IRL-BRB",
+      "pos": {
+        "x": 0.0,
+        "y": -140.0
+      },
+      "visible": true
+    },
+    {
+      "szene": "WorkShop",
+      "pos": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "_note": "Excerpt of Streamer.bot data/commands.json (1.0.7): command !so / !shoutout – for reading. / Auszug aus commands.json, nur zum Nachlesen.",
+  "commands": [
+    {
+      "id": "7a6a53ba-f042-480f-a58a-75a57e3d5f83",
+      "name": "[So] Shoutout",
+      "enabled": true,
+      "include": true,
+      "mode": 0,
+      "command": "!shoutout\r\n!so",
+      "regexExplicitCapture": false,
+      "location": 0,
+      "ignoreBotAccount": false,
+      "ignoreInternal": true,
+      "sources": 1,
+      "persistCounter": false,
+      "persistUserCounter": false,
+      "caseSensitive": false,
+      "globalCooldown": 15,
+      "userCooldown": 0,
+      "group": "",
+      "grantType": 0,
+      "permittedUsers": [],
+      "permittedGroups": [
+        "Moderators"
+      ]
+    }
+  ]
+}

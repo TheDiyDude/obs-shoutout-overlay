@@ -1,0 +1,447 @@
+{
+  "_note": "Excerpt of Streamer.bot data/actions.json (1.0.7): the shoutout actions, group and queue – for reading; import streamerbot/shoutout.sb.txt instead. byteCode = Base64 of ShoutoutOverlay.cs. / Auszug aus actions.json, nur zum Nachlesen; importiert wird shoutout.sb.txt.",
+  "groups": [
+    "Auto-Shoutout"
+  ],
+  "queues": [
+    {
+      "id": "c6f27a4d-a87f-401f-be68-4482e9e724e3",
+      "blocking": true,
+      "name": "ShoutOut"
+    }
+  ],
+  "actions": [
+    {
+      "id": "7347f8b2-06ca-497a-aad2-34bf0b6b5e14",
+      "queue": null,
+      "enabled": true,
+      "excludeFromHistory": false,
+      "excludeFromPending": false,
+      "name": "[Shoutout] Overlay",
+      "group": "Auto-Shoutout",
+      "alwaysRun": false,
+      "randomAction": false,
+      "concurrent": false,
+      "triggers": [
+        {
+          "min": 0,
+          "max": 1,
+          "id": "9939391c-2727-44f1-97d7-4b7d0063d12e",
+          "type": 107,
+          "enabled": true,
+          "exclusions": []
+        }
+      ],
+      "subActions": [
+        {
+          "name": null,
+          "description": null,
+          "references": [
+            "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+            "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+            "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+            ".\\Newtonsoft.Json.dll"
+          ],
+          "byteCode": "dXNpbmcgU3lzdGVtOw0KdXNpbmcgTmV3dG9uc29mdC5Kc29uOw0KDQovLyBTaG91dG91dC1PdmVybGF5IChPQlMtU3plbmUgX1Nob3V0b3V0LCBDOlxTdHJlYW1pbmdcc2hvdXRvdXRcc2hvdXRvdXQuaHRtbCk6IHNjaGlja3QgZGVuIFppZWwtS2FuYWwNCi8vIMO8YmVyIGRlbiBXZWJTb2NrZXQtU2VydmVyIGFuIGRhcyBPdmVybGF5LCBkYXMgc2ljaCBQcm9maWwsIFNwaWVsIHVuZCBDbGlwIHNlbGJzdCB2b24gVHdpdGNoIGhvbHQuDQovLyBBdWZnZXJ1ZmVuIGF1cyBbQXV0by1TaG91dG91dF0gU2hvdXRvdXQgdW5kIFtBdXRvLVNob3V0b3V0XSBBdXRvLVNob3V0b3V0IG5hY2ggIkdldCBVc2VyIEluZm8gZm9yIFRhcmdldCIuDQpwdWJsaWMgY2xhc3MgQ1BISW5saW5lDQp7DQogICAgcHVibGljIGJvb2wgRXhlY3V0ZSgpDQogICAgew0KICAgICAgICBzdHJpbmcgbG9naW4gPSBHZXQoInRhcmdldFVzZXJOYW1lIik7DQogICAgICAgIGlmIChsb2dpbiA9PSAiIikgbG9naW4gPSBHZXQoImlucHV0MCIpLlRyaW1TdGFydCgnQCcpOw0KICAgICAgICBpZiAobG9naW4gPT0gIiIpIGxvZ2luID0gR2V0KCJ1c2VyTmFtZSIpOw0KICAgICAgICBpZiAobG9naW4gPT0gIiIpDQogICAgICAgIHsNCiAgICAgICAgICAgIENQSC5Mb2dXYXJuKCJbU2hvdXRvdXRdIE92ZXJsYXk6IGtlaW4gS2FuYWwgaW4gZGVuIEFyZ3VtZW50ZW4iKTsNCiAgICAgICAgICAgIHJldHVybiBmYWxzZTsNCiAgICAgICAgfQ0KDQogICAgICAgIHZhciBwYXlsb2FkID0gbmV3DQogICAgICAgIHsNCiAgICAgICAgICAgIHNob3V0b3V0ID0gbmV3DQogICAgICAgICAgICB7DQogICAgICAgICAgICAgICAgbG9naW4gPSBsb2dpbi5Ub0xvd2VySW52YXJpYW50KCksDQogICAgICAgICAgICAgICAgZGlzcGxheU5hbWUgPSBHZXQoInRhcmdldFVzZXIiKSwNCiAgICAgICAgICAgICAgICBnYW1lID0gR2V0KCJnYW1lIiksDQogICAgICAgICAgICAgICAgcHJvZmlsZUltYWdlID0gR2V0KCJ0YXJnZXRVc2VyUHJvZmlsZUltYWdlVXJsIikNCiAgICAgICAgICAgIH0NCiAgICAgICAgfTsNCiAgICAgICAgQ1BILldlYnNvY2tldEJyb2FkY2FzdEpzb24oSnNvbkNvbnZlcnQuU2VyaWFsaXplT2JqZWN0KHBheWxvYWQpKTsNCiAgICAgICAgcmV0dXJuIHRydWU7DQogICAgfQ0KDQogICAgcHJpdmF0ZSBzdHJpbmcgR2V0KHN0cmluZyBuYW1lKQ0KICAgIHsNCiAgICAgICAgb2JqZWN0IHY7DQogICAgICAgIHJldHVybiBhcmdzLlRyeUdldFZhbHVlKG5hbWUsIG91dCB2KSAmJiB2ICE9IG51bGwgPyB2LlRvU3RyaW5nKCkuVHJpbSgpIDogIiI7DQogICAgfQ0KfQ0K",
+          "precompile": false,
+          "delayStart": false,
+          "saveResultToVariable": false,
+          "saveToVariable": null,
+          "id": "0dfc1f50-3171-4534-a07d-59034e12952b",
+          "weight": 0.0,
+          "type": 99999,
+          "parentId": null,
+          "enabled": true,
+          "index": 0
+        }
+      ],
+      "collapsedGroups": []
+    },
+    {
+      "id": "0b1ef5de-aa30-4fab-b5d1-5163fb73a589",
+      "queue": "c6f27a4d-a87f-401f-be68-4482e9e724e3",
+      "enabled": true,
+      "excludeFromHistory": false,
+      "excludeFromPending": false,
+      "name": "[Auto-Shoutout] Shoutout",
+      "group": "Auto-Shoutout",
+      "alwaysRun": false,
+      "randomAction": false,
+      "concurrent": false,
+      "triggers": [
+        {
+          "commandId": "7a6a53ba-f042-480f-a58a-75a57e3d5f83",
+          "id": "28f9e57d-49ac-4eea-920c-3af596efcd58",
+          "type": 401,
+          "enabled": true,
+          "exclusions": []
+        },
+        {
+          "id": "546996ad-4149-4aaf-98fa-53219bcb3dff",
+          "type": 144,
+          "enabled": true,
+          "exclusions": []
+        }
+      ],
+      "subActions": [
+        {
+          "userLogin": "%input0%",
+          "id": "6f8f27e7-d7e2-4ed1-85e6-486dafc9cc39",
+          "weight": 0.0,
+          "type": 50,
+          "parentId": null,
+          "enabled": true,
+          "index": 0
+        },
+        {
+          "userLogin": "%targetUser%",
+          "id": "64cf4b4d-7108-465f-be88-b46dd7bda51f",
+          "weight": 0.0,
+          "type": 29,
+          "parentId": null,
+          "enabled": true,
+          "index": 1
+        },
+        {
+          "actionId": "7347f8b2-06ca-497a-aad2-34bf0b6b5e14",
+          "runImmedately": true,
+          "id": "176506b7-d9d4-46ca-b7b7-30f52d596644",
+          "weight": 0.0,
+          "type": 4,
+          "parentId": null,
+          "enabled": true,
+          "index": 2
+        },
+        {
+          "text": "Euer Netflix-Abo ist abgelaufen und ihr wisst nicht, was ihr gucken sollt? Kein Problem! Geht einfach rüber zu %targetUser%. Da gab es zuletzt feinste Unterhaltung mit %game%. Lasst ein Abo/Follow da, es lohnt sich: https://www.twitch.tv/%targetUserName%",
+          "pin": false,
+          "pinToStreamEnd": false,
+          "useBot": true,
+          "fallback": true,
+          "id": "7e62667c-b376-4da8-adb4-2dfc11604e44",
+          "weight": 0.0,
+          "type": 10,
+          "parentId": null,
+          "enabled": true,
+          "index": 3
+        },
+        {
+          "value": "60000",
+          "maxValue": "0",
+          "random": false,
+          "id": "18d7939f-57c6-4cfb-a8bd-fe5be661c0b7",
+          "weight": 0.0,
+          "type": 1002,
+          "parentId": null,
+          "enabled": true,
+          "index": 4
+        }
+      ],
+      "collapsedGroups": []
+    },
+    {
+      "id": "803b90ee-d88b-46ef-b597-e4b1d178ac68",
+      "queue": "c6f27a4d-a87f-401f-be68-4482e9e724e3",
+      "enabled": true,
+      "excludeFromHistory": false,
+      "excludeFromPending": false,
+      "name": "[Auto-Shoutout] Auto-Shoutout",
+      "group": "Auto-Shoutout",
+      "alwaysRun": false,
+      "randomAction": false,
+      "concurrent": false,
+      "triggers": [
+        {
+          "min": 2,
+          "max": -1,
+          "id": "289eb6a0-292c-4734-b38d-b2103c96c0b0",
+          "type": 107,
+          "enabled": true,
+          "exclusions": []
+        }
+      ],
+      "subActions": [
+        {
+          "userLogin": "%userName%",
+          "id": "55930d88-e258-4660-a81d-cffe82caa002",
+          "weight": 0.0,
+          "type": 50,
+          "parentId": null,
+          "enabled": true,
+          "index": 0
+        },
+        {
+          "userLogin": "%userName%",
+          "id": "8cd3cacb-c7d8-4807-b532-bb988e5c57fc",
+          "weight": 0.0,
+          "type": 29,
+          "parentId": null,
+          "enabled": true,
+          "index": 1
+        },
+        {
+          "actionId": "7347f8b2-06ca-497a-aad2-34bf0b6b5e14",
+          "runImmedately": true,
+          "id": "c37a908e-d23f-4bfb-b8d2-fb2e4513753b",
+          "weight": 0.0,
+          "type": 4,
+          "parentId": null,
+          "enabled": true,
+          "index": 2
+        },
+        {
+          "text": "Euer Netflix-Abo ist abgelaufen und ihr wisst nicht, was ihr gucken sollt? Kein Problem! Geht einfach rüber zu %userName%. Da gab es zuletzt feinste Unterhaltung mit %game%. Lasst ein Abo/Follow da, es lohnt sich: https://www.twitch.tv/%userName%",
+          "pin": false,
+          "pinToStreamEnd": false,
+          "useBot": true,
+          "fallback": true,
+          "id": "b5b11d9e-763d-458e-aa5b-24934471b256",
+          "weight": 0.0,
+          "type": 10,
+          "parentId": null,
+          "enabled": true,
+          "index": 3
+        },
+        {
+          "value": "60000",
+          "maxValue": "0",
+          "random": false,
+          "id": "d0e2bb6b-6c30-40d4-9682-233c97a379ed",
+          "weight": 0.0,
+          "type": 1002,
+          "parentId": null,
+          "enabled": true,
+          "index": 4
+        }
+      ],
+      "collapsedGroups": []
+    },
+    {
+      "id": "ab783e9a-678f-4be2-a4be-a269a5c51c46",
+      "queue": null,
+      "enabled": true,
+      "excludeFromHistory": false,
+      "excludeFromPending": false,
+      "name": "[Auto-Shout] Get Info",
+      "group": "Auto-Shoutout",
+      "alwaysRun": false,
+      "randomAction": false,
+      "concurrent": false,
+      "triggers": [
+        {
+          "username": "",
+          "isUserId": false,
+          "id": "f9d8efe7-2d2c-4280-9c96-c93c1524fbd4",
+          "type": 120,
+          "enabled": true,
+          "exclusions": []
+        }
+      ],
+      "subActions": [
+        {
+          "userLogin": "%userName%",
+          "id": "eabb08f7-0a8e-4bca-ad86-1fa7e276d37b",
+          "weight": 0.0,
+          "type": 50,
+          "parentId": null,
+          "enabled": true,
+          "index": 0
+        },
+        {
+          "userLogin": "%userName%",
+          "id": "275c5a80-313b-470c-810d-3dbdc072a4e8",
+          "weight": 0.0,
+          "type": 52,
+          "parentId": null,
+          "enabled": true,
+          "index": 1
+        },
+        {
+          "input": "%teamName[0]%",
+          "operation": 0,
+          "value": "Midnight Society",
+          "autoType": true,
+          "subActions": [
+            {
+              "random": false,
+              "subActions": [
+                {
+                  "actionId": "803b90ee-d88b-46ef-b597-e4b1d178ac68",
+                  "runImmedately": true,
+                  "id": "121f9ea1-451c-4c88-8741-e14f4e6d630e",
+                  "weight": 0.0,
+                  "type": 4,
+                  "parentId": "9f6640a9-2149-4fb8-982d-f6dff0b67ada",
+                  "enabled": true,
+                  "index": 0
+                },
+                {
+                  "id": "ad44eecf-6045-455c-bea5-e7145a19aa0a",
+                  "weight": 0.0,
+                  "type": 124,
+                  "parentId": "9f6640a9-2149-4fb8-982d-f6dff0b67ada",
+                  "enabled": true,
+                  "index": 1
+                }
+              ],
+              "id": "9f6640a9-2149-4fb8-982d-f6dff0b67ada",
+              "weight": 0.0,
+              "type": 99901,
+              "parentId": "24106431-25dc-4c50-b768-7b7a7bc38849",
+              "enabled": true,
+              "index": 0
+            },
+            {
+              "random": false,
+              "subActions": [
+                {
+                  "actionId": "00000000-0000-0000-0000-000000000000",
+                  "runImmedately": true,
+                  "id": "378bfeac-4ffb-444b-90ca-bc4a77fc1da0",
+                  "weight": 0.0,
+                  "type": 4,
+                  "parentId": "58c50e7f-15c7-431a-90f5-0802e7e81122",
+                  "enabled": true,
+                  "index": 0
+                }
+              ],
+              "id": "58c50e7f-15c7-431a-90f5-0802e7e81122",
+              "weight": 0.0,
+              "type": 99902,
+              "parentId": "24106431-25dc-4c50-b768-7b7a7bc38849",
+              "enabled": true,
+              "index": 1
+            }
+          ],
+          "id": "24106431-25dc-4c50-b768-7b7a7bc38849",
+          "weight": 0.0,
+          "type": 120,
+          "parentId": null,
+          "enabled": true,
+          "index": 2
+        },
+        {
+          "input": "%teamName[1]%",
+          "operation": 0,
+          "value": "Midnight Society",
+          "autoType": true,
+          "subActions": [
+            {
+              "random": false,
+              "subActions": [
+                {
+                  "actionId": "803b90ee-d88b-46ef-b597-e4b1d178ac68",
+                  "runImmedately": true,
+                  "id": "26a4b2f7-6bf7-4ccf-8202-2b94f634cf9e",
+                  "weight": 0.0,
+                  "type": 4,
+                  "parentId": "7b0eeb6e-a197-46d7-8351-082d5022e6a5",
+                  "enabled": true,
+                  "index": 0
+                },
+                {
+                  "id": "5182467b-ec5f-417e-b611-5eace627b110",
+                  "weight": 0.0,
+                  "type": 124,
+                  "parentId": "7b0eeb6e-a197-46d7-8351-082d5022e6a5",
+                  "enabled": true,
+                  "index": 1
+                }
+              ],
+              "id": "7b0eeb6e-a197-46d7-8351-082d5022e6a5",
+              "weight": 0.0,
+              "type": 99901,
+              "parentId": "5e977062-9d87-43ed-ade3-16da56578bb3",
+              "enabled": true,
+              "index": 0
+            },
+            {
+              "random": false,
+              "subActions": [
+                {
+                  "actionId": "00000000-0000-0000-0000-000000000000",
+                  "runImmedately": true,
+                  "id": "da26ebdc-cbc5-4452-be0e-29ec13450f88",
+                  "weight": 0.0,
+                  "type": 4,
+                  "parentId": "94572129-050f-4c64-9f43-582fe67f2f51",
+                  "enabled": true,
+                  "index": 0
+                }
+              ],
+              "id": "94572129-050f-4c64-9f43-582fe67f2f51",
+              "weight": 0.0,
+              "type": 99902,
+              "parentId": "5e977062-9d87-43ed-ade3-16da56578bb3",
+              "enabled": true,
+              "index": 1
+            }
+          ],
+          "id": "5e977062-9d87-43ed-ade3-16da56578bb3",
+          "weight": 0.0,
+          "type": 120,
+          "parentId": null,
+          "enabled": true,
+          "index": 3
+        },
+        {
+          "input": "%userName%",
+          "operation": 0,
+          "value": "mathmaneu",
+          "autoType": true,
+          "subActions": [
+            {
+              "random": false,
+              "subActions": [
+                {
+                  "actionId": "803b90ee-d88b-46ef-b597-e4b1d178ac68",
+                  "runImmedately": true,
+                  "id": "2eaef39a-23fa-488a-9ec0-14a25248b959",
+                  "weight": 0.0,
+                  "type": 4,
+                  "parentId": "d1fecedb-f073-48b5-8632-7fd1a994ab97",
+                  "enabled": true,
+                  "index": 0
+                }
+              ],
+              "id": "d1fecedb-f073-48b5-8632-7fd1a994ab97",
+              "weight": 0.0,
+              "type": 99901,
+              "parentId": "585b7a20-e86f-4cf8-a9a5-2245b1ba2f95",
+              "enabled": true,
+              "index": 0
+            },
+            {
+              "random": false,
+              "subActions": [
+                {
+                  "actionId": "00000000-0000-0000-0000-000000000000",
+                  "runImmedately": true,
+                  "id": "fc5eaea9-1a4f-4de0-8a64-feb4207cfe54",
+                  "weight": 0.0,
+                  "type": 4,
+                  "parentId": "d58ef338-d754-46cf-93b2-3438f89b8330",
+                  "enabled": true,
+                  "index": 0
+                }
+              ],
+              "id": "d58ef338-d754-46cf-93b2-3438f89b8330",
+              "weight": 0.0,
+              "type": 99902,
+              "parentId": "585b7a20-e86f-4cf8-a9a5-2245b1ba2f95",
+              "enabled": true,
+              "index": 1
+            }
+          ],
+          "id": "585b7a20-e86f-4cf8-a9a5-2245b1ba2f95",
+          "weight": 0.0,
+          "type": 120,
+          "parentId": null,
+          "enabled": true,
+          "index": 4
+        }
+      ],
+      "collapsedGroups": []
+    }
+  ]
+}
