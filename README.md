@@ -10,13 +10,13 @@ A shoutout overlay for OBS and Streamer.bot: on `!so <channel>`, on auto-shoutou
 OBS shows a card with the channel's profile picture, name and last game and plays one of the
 channel's clips.
 
-| `!so WolfMakes` | `!so randvieh` (long name) |
+| `!so WolfMakes` | `!so randvieh` |
 |---|---|
 | ![Example: !so WolfMakes](docs/example-wolfmakes-en.png) | ![Example: !so randvieh](docs/example-randvieh-en.png) |
 
 *Browser source 760 × 640 with a transparent margin for the shadow: the clip plays, below it a
 progress bar, profile picture, name, last game and the clip's title, views and date. Long names are
-shrunk to fit, long clip titles are cut with "…". Shown with `?lang=en`.*
+shrunk to fit, long clip titles are cut with "…". Shown with `?lang=en`; German is the default.*
 
 ### Features
 
@@ -128,7 +128,6 @@ recommended, a bot account).
 - The overlay uses Twitch's **public GraphQL endpoint** with the Client-ID of the Twitch website
   (no login). This is not an official API; Twitch may change it at any time.
 - Clips are played directly from Twitch's CDN.
-- The example images show clips of other channels and are only meant to illustrate the overlay.
 
 ### License
 
@@ -142,7 +141,7 @@ Ein Shoutout-Overlay für OBS und Streamer.bot: Bei `!so <kanal>`, beim Auto-Sho
 Raids zeigt OBS eine Karte mit Profilbild, Name und letztem Spiel des Kanals und spielt einen
 seiner Clips ab.
 
-| `!so WolfMakes` | `!so randvieh` (langer Name) |
+| `!so WolfMakes` | `!so randvieh` |
 |---|---|
 | ![Beispiel: !so WolfMakes](docs/beispiel-wolfmakes.png) | ![Beispiel: !so randvieh](docs/beispiel-randvieh.png) |
 
@@ -241,7 +240,6 @@ möglichst ein Bot-Konto).
 - Das Overlay nutzt den **öffentlichen GraphQL-Endpunkt** von Twitch mit der Client-ID der
   Twitch-Website (ohne Login). Das ist keine offizielle API; Twitch kann sie jederzeit ändern.
 - Clips werden direkt vom CDN von Twitch abgespielt.
-- Die Beispielbilder zeigen Clips anderer Kanäle und dienen nur zur Veranschaulichung.
 
 ### Lizenz
 
