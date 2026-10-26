@@ -10,9 +10,9 @@ A shoutout overlay for OBS and Streamer.bot: on `!so <channel>`, on auto-shoutou
 OBS shows a card with the channel's profile picture, name and last game and plays one of the
 channel's clips.
 
-| `!so WolfMakes` | `!so Virtual_Dimension` (long name) |
+| `!so WolfMakes` | `!so randvieh` (long name) |
 |---|---|
-| ![Example: !so WolfMakes](docs/example-wolfmakes-en.png) | ![Example: !so Virtual_Dimension](docs/example-virtual-dimension-en.png) |
+| ![Example: !so WolfMakes](docs/example-wolfmakes-en.png) | ![Example: !so randvieh](docs/example-randvieh-en.png) |
 
 *Browser source 760 × 640 with a transparent margin for the shadow: the clip plays, below it a
 progress bar, profile picture, name, last game and the clip's title, views and date. Long names are
@@ -142,9 +142,9 @@ Ein Shoutout-Overlay für OBS und Streamer.bot: Bei `!so <kanal>`, beim Auto-Sho
 Raids zeigt OBS eine Karte mit Profilbild, Name und letztem Spiel des Kanals und spielt einen
 seiner Clips ab.
 
-| `!so WolfMakes` | `!so Virtual_Dimension` (langer Name) |
+| `!so WolfMakes` | `!so randvieh` (langer Name) |
 |---|---|
-| ![Beispiel: !so WolfMakes](docs/beispiel-wolfmakes.png) | ![Beispiel: !so Virtual_Dimension](docs/beispiel-virtual-dimension.png) |
+| ![Beispiel: !so WolfMakes](docs/beispiel-wolfmakes.png) | ![Beispiel: !so randvieh](docs/beispiel-randvieh.png) |
 
 *Browserquelle 760 × 640 mit transparentem Rand für den Schatten: Der Clip läuft, darunter
 Fortschrittsbalken, Profilbild, Name, letztes Spiel sowie Titel, Aufrufe und Datum des Clips.
