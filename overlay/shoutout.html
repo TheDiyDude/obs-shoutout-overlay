@@ -4,23 +4,30 @@
 <meta charset="utf-8">
 <title>Shoutout</title>
 <!--
-  Shoutout overlay for OBS (browser source 760x640) – see README.md
+  Shoutout overlay for OBS (browser source 760x1040, 400 px cropped) – see README.md
 
   EN: Streamer.bot (action "[Shoutout] Overlay") sends {"shoutout": {"login": "...", ...}} through its
-  WebSocket server (ws://127.0.0.1:8080). The overlay fetches profile, last game and a clip from
-  Twitch GQL itself and plays a short excerpt of the channel's live stream (official Twitch player,
-  needs http://localhost, not file://), or a clip if the channel is offline or with type=clip.
+  WebSocket server (ws://127.0.0.1:8080). The overlay fetches everything else from Twitch GQL and plays
+  the channel's newest clip of today, otherwise a short excerpt in the official Twitch player (running
+  stream, otherwise last VOD), otherwise a top clip; type=clip plays top clips only. The player needs
+  http://localhost (not file://) and a source height of 1040 with 400 px cropped at the bottom in OBS:
+  it starts muted in that cropped area and only moves into the card once real content plays (no ads).
   Several shoutouts are played one after another.
 
   DE: Streamer.bot (Aktion "[Shoutout] Overlay") schickt per WebSocket-Server {"shoutout": {"login": …}}.
-  Das Overlay holt sich Profil, letztes Spiel und Clips selbst über Twitch-GQL und zeigt einen kurzen
-  Ausschnitt des laufenden Streams (offizieller Twitch-Player, braucht http://localhost statt file://),
-  ist der Kanal offline oder mit type=clip einen Clip.
+  Das Overlay holt alles Weitere über Twitch-GQL und spielt den neuesten Clip von heute, sonst einen
+  kurzen Ausschnitt im offiziellen Twitch-Player (laufender Stream, sonst letztes VOD), sonst einen
+  Top-Clip; type=clip spielt nur Top-Clips. Der Player braucht http://localhost statt file:// und eine
+  Quellhöhe von 1040 mit 400 px Zuschnitt unten in OBS: Er startet stumm in diesem abgeschnittenen
+  Bereich und wandert erst in die Karte, wenn echter Inhalt läuft (keine Werbung).
   Mehrere Shoutouts laufen nacheinander.
 
   URL parameters / URL-Parameter (?…):
-    type=live|clip live stream excerpt, clip as fallback / Live-Ausschnitt, sonst Clip (live)
-    live=<s>       length of the live excerpt / Länge des Live-Ausschnitts (20)
+    type=live|vod|clip today's newest clip → live stream → last VOD → clip; vod skips the stream;
+                   clip only top clips (live)
+                   neuester Clip von heute → Live → letztes VOD → Clip; vod überspringt den Stream;
+                   clip nur Top-Clips
+    live=<s>       length of the stream excerpt / Länge des Ausschnitts aus Stream oder VOD (20)
     test=<login>   play a shoutout on load / spielt beim Laden einen Shoutout ab
     max=<s>        max clip length in seconds / maximale Clip-Länge (30)
     min=<s>        shorter clips only if the channel has no longer ones / kürzere nur ohne längere (10)
@@ -62,10 +69,22 @@
   #card.show { opacity: 1; transform: none; }
 
   #media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
-  #media video, #media .fallback, #live { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #media video, #media .fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
   #media video { object-fit: cover; }
-  #live iframe { width: 100%; height: 100%; border: 0; display: block; }
   #media.live video { display: none; }
+
+  /* Twitch-Player: startet unterhalb der Karte (in OBS abgeschnitten, für Twitch aber sichtbar –
+     verdeckt oder durchsichtig spielt er nicht), wandert bei echtem Inhalt auf den Medienbereich */
+  #live {
+    position: absolute; left: 60px; top: 660px; width: var(--card-w); height: 360px;
+    border-radius: var(--radius) var(--radius) 0 0; overflow: hidden;
+  }
+  #live.oncard { top: 60px; }
+  #debug {
+    position: absolute; left: 4px; top: 2px; width: 750px; height: 56px; overflow: hidden;
+    font: 11px/14px monospace; color: #0f0; white-space: pre; text-shadow: 0 0 2px #000;
+  }
+  #live iframe { width: 100%; height: 100%; border: 0; display: block; }
   #media .fallback {
     display: none; align-items: center; justify-content: center;
     background-size: cover; background-position: center;
@@ -127,7 +146,6 @@
 <div id="card">
   <div id="media">
     <video id="video" playsinline preload="auto"></video>
-    <div id="live"></div>
     <div class="fallback" id="fallback"><img id="fallbackAvatar" alt=""></div>
   </div>
   <div id="progress"><div id="bar"></div></div>
@@ -152,15 +170,23 @@
   </div>
 </div>
 
+<div id="live"></div>
+<div id="debug"></div>
+
 <script>
 const params = new URLSearchParams(location.search);
 const MAX_SECONDS = Number(params.get('max') || 30);
 const MIN_SECONDS = Number(params.get('min') || 10);
 const NOCLIP_SECONDS = Number(params.get('noclip') || 8);
-const TYPE = (params.get('type') || 'live').toLowerCase() === 'clip' ? 'clip' : 'live';
+const TYPE = ['vod', 'clip'].includes((params.get('type') || '').toLowerCase()) ? params.get('type').toLowerCase() : 'live';
 const LIVE_SECONDS = Number(params.get('live') || 20);
-// Der Twitch-Player läuft nur eingebettet in http(s)-Seiten (parent = Hostname), nicht unter file://
-const LIVE_POSSIBLE = TYPE === 'live' && /^https?:$/.test(location.protocol) && !!location.hostname;
+const LIVE_WAIT = 45;   // so lange darf Werbung vor dem Live-Stream dauern
+const VOD_WAIT = 30;
+// Der Twitch-Player läuft nur eingebettet in http(s)-Seiten (parent = Hostname), nicht unter file://,
+// und braucht die Höhe für den Startbereich unter der Karte (660 + 360 px)
+function livePossible() {
+  return TYPE !== 'clip' && /^https?:$/.test(location.protocol) && !!location.hostname && innerHeight >= 1020;
+}
 const VOLUME = Math.min(1, Math.max(0, Number(params.get('volume') || 0.8)));
 const WS_URL = params.get('ws') || 'ws://127.0.0.1:8080/';
 const LANG = (params.get('lang') || 'de').toLowerCase().startsWith('en') ? 'en' : 'de';
@@ -176,7 +202,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const queue = [];
 let busy = false;
 
-function log(...a) { console.log('[shoutout]', ...a); }
+// debug=1: letzte Logzeilen im freien Rand über der Karte
+const DEBUG = params.has('debug');
+function log(...a) {
+  console.log('[shoutout]', ...a);
+  if (!DEBUG) return;
+  const el = $('debug');
+  const line = new Date().toTimeString().slice(0, 8) + ' ' + a.join(' ');
+  el.textContent = (el.textContent + '\n' + line).split('\n').slice(-4).join('\n');
+}
 
 async function gql(query) {
   const res = await fetch(GQL_URL, {
@@ -186,7 +220,9 @@ async function gql(query) {
   });
   if (!res.ok) throw new Error('GQL HTTP ' + res.status);
   const json = await res.json();
-  if (json.errors) throw new Error('GQL ' + JSON.stringify(json.errors));
+  // Teilfehler (z. B. sporadischer "service error" bei einer Clip-Liste) nur loggen, der Rest ist brauchbar
+  if (json.errors && !json.data?.user) throw new Error('GQL ' + JSON.stringify(json.errors));
+  if (json.errors) log('GQL-Teilfehler:', JSON.stringify(json.errors));
   return json.data;
 }
 
@@ -196,7 +232,7 @@ const CLIP_FIELDS = `edges { node {
   videoQualities { quality sourceURL }
 } }`;
 
-// Profil, letztes Spiel, laufender Stream und Clips (Top-Clips des letzten Monats, sonst aller Zeiten)
+// Profil, letztes Spiel, neuester Clip von heute, laufender Stream, letztes VOD und Clips (Top-Clips des letzten Monats, sonst aller Zeiten)
 async function fetchStreamer(login) {
   const l = JSON.stringify(login);
   const data = await gql(`query {
@@ -204,6 +240,10 @@ async function fetchStreamer(login) {
       login displayName profileImageURL(width: 150) bannerImageURL
       lastBroadcast { game { name displayName } }
       stream { title viewersCount game { name displayName } }
+      videos(first: 1, type: ARCHIVE, sort: TIME) { edges { node {
+        id title createdAt lengthSeconds viewCount game { name displayName }
+      } } }
+      day: clips(first: 20, criteria: {period: LAST_DAY, sort: VIEWS_DESC}) { ${CLIP_FIELDS} }
       month: clips(first: 15, criteria: {period: LAST_MONTH, sort: VIEWS_DESC}) { ${CLIP_FIELDS} }
       all: clips(first: 15, criteria: {period: ALL_TIME, sort: VIEWS_DESC}) { ${CLIP_FIELDS} }
     }
@@ -213,12 +253,22 @@ async function fetchStreamer(login) {
   const usable = c => c && c.videoQualities && c.videoQualities.length && c.playbackAccessToken;
   const month = (u.month?.edges || []).map(e => e.node).filter(usable);
   const all = (u.all?.edges || []).map(e => e.node).filter(usable);
+  // Neuester Clip vom heutigen Tag (Twitch sortiert Clips nicht nach Datum, daher selbst)
+  const today = new Date().toDateString();
+  const todayClip = (u.day?.edges || []).map(e => e.node).filter(usable)
+    .filter(c => new Date(c.createdAt).toDateString() === today)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0] || null;
   const long = list => list.filter(c => (c.durationSeconds || 0) >= MIN_SECONDS);
   // Bevorzugt Clips ab MIN_SECONDS: letzter Monat, sonst aller Zeiten; nur ohne solche auch kürzere
   let clips = long(month);
   if (clips.length < 3) clips = long(all);
   if (!clips.length) clips = month.length >= 3 ? month : all;
-  return { user: u, clip: clips.length ? clips[Math.floor(Math.random() * clips.length)] : null };
+  return {
+    user: u,
+    vod: u.videos?.edges?.[0]?.node || null,
+    todayClip,
+    clip: clips.length ? clips[Math.floor(Math.random() * clips.length)] : null,
+  };
 }
 
 function clipUrl(clip) {
@@ -244,33 +294,72 @@ function loadEmbed() {
   return embedScript;
 }
 
-// Offiziellen Twitch-Player starten; erst stumm (Werbung/Hinweise vor dem Stream bleiben unhörbar),
-// bei PLAYING laut. Ohne PLAYING binnen 15 s gilt der Live-Ausschnitt als gescheitert.
-async function startLive(login) {
+// Offiziellen Twitch-Player stumm im abgeschnittenen Startbereich starten und warten, bis isContent()
+// echten Inhalt meldet (Werbung davor bleibt unsichtbar und stumm); danach laut. Gibt false zurück,
+// wenn das binnen waitSeconds nicht klappt.
+let current = null;  // { player, isContent } während eines Ausschnitts
+async function startPlayer(options, isContent, waitSeconds) {
   await loadEmbed();
   const box = $('live');
+  box.classList.remove('oncard');
   box.innerHTML = '';
   const player = new Twitch.Player(box, {
-    channel: login, parent: [location.hostname], width: '100%', height: '100%',
+    ...options, parent: [location.hostname], width: '100%', height: '100%',
     autoplay: true, muted: true, controls: false,
   });
-  try {
-    await new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error('Timeout beim Starten')), 15000);
-      player.addEventListener(Twitch.Player.PLAYING, () => { clearTimeout(t); resolve(); });
-      player.addEventListener(Twitch.Player.OFFLINE, () => { clearTimeout(t); reject(new Error('offline')); });
-    });
-  } catch (e) {
-    stopLive();
-    throw e;
-  }
+  const ok = await new Promise(resolve => {
+    const start = Date.now();
+    const iv = setInterval(() => {
+      let content = false;
+      try { content = !player.isPaused() && isContent(player); } catch { /* Player noch nicht bereit */ }
+      if (content || Date.now() - start > waitSeconds * 1000) { clearInterval(iv); resolve(content); }
+    }, 500);
+    player.addEventListener(Twitch.Player.OFFLINE, () => { clearInterval(iv); resolve(false); });
+  });
+  if (!ok) { stopLive(); return false; }
   player.setVolume(VOLUME);
   player.setMuted(false);
-  return player;
+  current = { player, isContent, content: true, misses: 0 };
+  return true;
+}
+
+// Werbepause mitten im Ausschnitt: Player stumm zurück in den abgeschnittenen Bereich, in der Karte
+// so lange Banner und Profilbild; läuft der Stream weiter, kommt er zurück. Erst nach 2 s ohne Inhalt,
+// der Player meldet zwischendurch kurz 0 s Latenz.
+function watchLive() {
+  if (!current) return;
+  let content = false;
+  try { content = !current.player.isPaused() && current.isContent(current.player); } catch { /* egal */ }
+  current.misses = content ? 0 : current.misses + 1;
+  if (!content && current.misses < 4) return;
+  if (content === current.content) return;
+  current.content = content;
+  log(content ? 'Stream läuft wieder' : 'Werbepause, Player ausgeblendet');
+  current.player.setMuted(!content);
+  $('live').classList.toggle('oncard', content);
+  $('media').classList.toggle('noclip', !content);
+}
+
+// Live: Während Werbung meldet der Player 0 s Latenz zum Broadcaster, beim Stream mehr
+function startLive(login) {
+  return startPlayer({ channel: login },
+    p => (p.getPlaybackStats()?.hlsLatencyBroadcaster || 0) > 0, LIVE_WAIT);
+}
+
+// VOD ab zufälliger Stelle (nicht in den ersten/letzten Minuten); Inhalt läuft, wenn die Zeit über
+// die Startstelle hinaus weiterläuft
+function startVod(vod) {
+  const len = vod.lengthSeconds || 0;
+  const from = len > LIVE_SECONDS + 240 ? 120 + Math.floor(Math.random() * (len - LIVE_SECONDS - 240)) : 0;
+  const time = `${Math.floor(from / 3600)}h${Math.floor(from / 60) % 60}m${from % 60}s`;
+  return startPlayer({ video: 'v' + vod.id, time },
+    p => p.getCurrentTime() > from + 1, VOD_WAIT);
 }
 
 function stopLive() {
+  current = null;
   $('live').innerHTML = '';
+  $('live').classList.remove('oncard');
   $('media').classList.remove('live');
 }
 
@@ -318,12 +407,15 @@ async function show(so) {
   catch (e) { log('Twitch-Abfrage fehlgeschlagen:', e.message); info = null; }
 
   const user = info?.user;
-  const clip = info?.clip;
+  // Kette: neuester Clip von heute → laufender Stream → letztes VOD → Clip (type=clip: nur Clip wie früher)
+  const todayClip = TYPE !== 'clip' ? info?.todayClip : null;
+  const clip = todayClip || info?.clip;
+  const vod = info?.vod;
   const name = user?.displayName || so.displayName || login;
   const avatar = user?.profileImageURL || so.profileImage || '';
   // displayName ist in der Sprache des Rechners, name immer englisch
-  const stream = user?.stream;
-  const g = stream?.game || user?.lastBroadcast?.game;
+  const stream = TYPE === 'live' ? user?.stream : null;  // type=vod: laufenden Stream überspringen
+  const g = stream?.game || vod?.game || user?.lastBroadcast?.game;
   const game = (LANG === 'en' ? g?.name : g?.displayName) || g?.displayName || so.game || '';
   if (!user && !so.displayName) { log('Kanal nicht gefunden:', login); return; }
 
@@ -340,21 +432,37 @@ async function show(so) {
   let playing = false;
   let live = false;
 
+  // Ausschnitt aus dem laufenden Stream, sonst aus dem letzten VOD
   $('clip').classList.remove('live');
-  if (LIVE_POSSIBLE && stream) {
+  if (todayClip) log('Neuester Clip von heute:', todayClip.title);
+  if (!todayClip && user && livePossible() && (stream || vod)) {
+    $('media').classList.remove('noclip');
+    $('media').classList.add('live');
     try {
-      $('media').classList.remove('noclip');
-      $('media').classList.add('live');
-      await startLive(user.login);
-      $('title').textContent = stream.title || '';
-      $('views').textContent = fmtViewers(stream.viewersCount || 0);
-      $('date').textContent = '';
-      $('clip').classList.remove('hidden');
-      $('clip').classList.add('live');
-      seconds = LIVE_SECONDS;
-      live = true;
+      if (stream && await startLive(user.login)) {
+        $('title').textContent = stream.title || '';
+        $('views').textContent = fmtViewers(stream.viewersCount || 0);
+        $('date').textContent = '';
+        $('clip').classList.add('live');
+        live = true;
+      } else if (stream) {
+        log('Live-Stream startet nicht (Werbung zu lang, Sperre?)');
+      }
+      if (!live && vod && await startVod(vod)) {
+        $('title').textContent = vod.title || '';
+        $('views').textContent = fmtViews(vod.viewCount || 0);
+        $('date').textContent = fmtDate(vod.createdAt);
+        live = true;
+      }
     } catch (e) {
-      log('Live-Ausschnitt nicht möglich, nehme Clip:', e.message);
+      log('Twitch-Player:', e.message);
+    }
+    if (live) {
+      $('clip').classList.remove('hidden');
+      seconds = LIVE_SECONDS;
+    } else {
+      log('Kein Ausschnitt aus Stream oder VOD, nehme Clip');
+      stopLive();
     }
   }
 
@@ -389,18 +497,23 @@ async function show(so) {
   fitName();
   $('card').classList.add('show');
   await sleep(500);
+  if (live) $('live').classList.add('oncard');
   if (playing) {
     video.currentTime = 0;
     try { await video.play(); } catch (e) { log('play() fehlgeschlagen:', e.message); }
   }
+  log(`Karte an: ${live ? 'Twitch-Player' : playing ? 'Clip' : 'ohne Clip'}, ${seconds} s`);
   runBar(seconds);
+  const watch = live ? setInterval(watchLive, 500) : null;
   await new Promise(resolve => {
     const t = setTimeout(resolve, seconds * 1000);
     video.onended = () => { clearTimeout(t); resolve(); };
   });
+  clearInterval(watch);
+  log('Karte aus');
+  stopLive();
   $('card').classList.remove('show');
   await sleep(600);
-  stopLive();
   video.pause();
   video.removeAttribute('src');
   video.load();

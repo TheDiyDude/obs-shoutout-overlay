@@ -20,9 +20,14 @@ shrunk to fit, long clip titles are cut with "…". Shown with `?lang=en`; Germa
 
 ### Features
 
-- If the channel is live (e.g. a raider), shows a 20 s excerpt of its current stream in the
-  official Twitch player, with stream title, viewer count and a LIVE badge.
-- Otherwise, or with `?type=clip`, plays a random clip of the channel (top 15 of the last month,
+- Plays the channel's **newest clip of today** if there is one (e.g. made during the raider's
+  stream; max. 30 s).
+- Otherwise shows a 20 s excerpt of the channel's stream in the official Twitch player: of the running
+  stream if the channel is live (e.g. a raider; with stream title, viewer count and a LIVE badge),
+  otherwise from a random point of its last VOD (title, views, date). Ads never reach your stream:
+  the player starts muted outside the visible area and only moves into the card once the stream
+  itself plays; a commercial break during the excerpt shows banner and profile picture instead.
+- Without stream and VOD, or with `?type=clip`, plays a random clip of the channel (top 15 of the last month,
   otherwise all-time; prefers clips of at least 10 s, max. 30 s). Without clips: profile picture
   in front of the channel banner for 8 s.
 - Several shoutouts are queued and played one after another.
@@ -89,13 +94,16 @@ its own logged-in Twitch and bot accounts.
 recommended, a bot account).
 
 1. **Overlay:** copy `overlay/shoutout.html` to a folder of your choice, e.g. `C:\Streaming\shoutout\`.
-   The live excerpt needs the page to be served over **http from `localhost`** (the Twitch player
-   only runs embedded in a web page whose host name it knows, not under `file://`), e.g. with
+   The stream/VOD excerpt needs the page to be served over **http from `localhost`** (the Twitch
+   player only runs embedded in a web page whose host name it knows, not under `file://`), e.g. with
    `python -m http.server 7000` in that folder or any local web server. Opened as a local file,
    the overlay always plays clips.
 2. **OBS:** create a scene `_Shoutout` with a *Browser* source:
    - URL `http://localhost:7000/shoutout.html` (or *Local file* → `shoutout.html` for clips only)
-   - width 760, height 640 (640 px card plus 60 px margin for the shadow)
+   - width 760, height **1040**, and in the scene *Edit Transform* → *Crop* bottom **400** (visible:
+     760 × 640, 640 px card plus 60 px margin for the shadow). The Twitch player starts in the
+     cropped part: it only plays while visible on the page, so it cannot be hidden in the page itself.
+     Clips only: height 640 without crop is enough.
    - *Control audio via OBS* on, so the clip sound appears in the mixer
    - add the scene `_Shoutout` as a source to your live scenes and position it.
 3. **Streamer.bot:**
@@ -114,14 +122,15 @@ recommended, a bot account).
 
 | Parameter | Default | Effect |
 |---|---|---|
-| `type=live\|clip` | `live` | `live`: excerpt of the running stream, clip if the channel is offline; `clip`: always a clip |
-| `live=<s>` | 20 | length of the live excerpt |
+| `type=live\|vod\|clip` | `live` | `live`: today's newest clip, otherwise excerpt of the running stream, otherwise of the last VOD, otherwise a top clip; `vod`: skips the running stream; `clip`: top clips only |
+| `live=<s>` | 20 | length of the stream/VOD excerpt |
 | `lang=de\|en` | `de` | language of the overlay (views, date, text without clips, game name) |
 | `test=<login>` | – | plays a shoutout on load (also in a normal browser) |
 | `max=<s>` | 30 | maximum clip length |
 | `min=<s>` | 10 | shorter clips only if the channel has no longer ones |
 | `noclip=<s>` | 8 | display time without clips |
-| `volume=<0..1>` | 0.8 | volume of clip and live excerpt |
+| `volume=<0..1>` | 0.8 | volume of clip and excerpt |
+| `debug` | – | shows the last log lines in the margin above the card |
 | `ws=<url>` | `ws://127.0.0.1:8080/` | Streamer.bot WebSocket |
 
 ### Testing
@@ -137,9 +146,12 @@ recommended, a bot account).
 - The overlay uses Twitch's **public GraphQL endpoint** with the Client-ID of the Twitch website
   (no login). This is not an official API; Twitch may change it at any time.
 - Clips are played directly from Twitch's CDN.
-- The live excerpt uses the official embedded Twitch player. It starts muted and only turns the
-  sound on once the stream plays, so ads or notices in front of it stay silent; if the stream does
-  not start within 15 s (offline, ad, mature-content notice), the overlay plays a clip instead.
+- The excerpt uses the official embedded Twitch player. Ads are detected by the player's latency
+  to the broadcaster (0 during ads); the overlay waits up to 45 s for a pre-roll (VOD: 30 s), then
+  falls back to the VOD or a clip. So the shoutout may appear up to ~45 s after the trigger.
+- Channels with content classification labels can show a notice ("may not be suitable…") that
+  needs a click; the overlay cannot detect it. Logging in to Twitch once in an OBS browser dock
+  with suitable content preferences should avoid it (OBS shares the cookies with browser sources; not tested).
 
 ### License
 
@@ -163,9 +175,15 @@ Lange Namen werden verkleinert, lange Clip-Titel mit „…“ gekürzt.*
 
 ### Funktionen
 
-- Ist der Kanal live (z. B. ein Raider), zeigt es 20 s aus dem laufenden Stream im offiziellen
-  Twitch-Player, mit Streamtitel, Zuschauerzahl und LIVE-Kennzeichen.
-- Sonst oder mit `?type=clip` spielt es einen zufälligen Clip des Kanals (Top 15 des letzten Monats, sonst aller Zeiten;
+- Spielt den **neuesten Clip von heute**, wenn es einen gibt (z. B. im Stream des Raiders entstanden;
+  max. 30 s).
+- Sonst zeigt es 20 s aus dem Stream des Kanals im offiziellen Twitch-Player: aus dem laufenden Stream, wenn
+  der Kanal live ist (z. B. ein Raider; mit Streamtitel, Zuschauerzahl und LIVE-Kennzeichen), sonst
+  ab einer zufälligen Stelle des letzten VODs (Titel, Aufrufe, Datum). Werbung landet nie im eigenen
+  Stream: Der Player startet stumm außerhalb des sichtbaren Bereichs und kommt erst in die Karte, wenn
+  der Stream selbst läuft; bei einer Werbepause während des Ausschnitts zeigt die Karte Banner und
+  Profilbild.
+- Ohne Stream und VOD oder mit `?type=clip` spielt es einen zufälligen Clip des Kanals (Top 15 des letzten Monats, sonst aller Zeiten;
   bevorzugt Clips ab 10 s, höchstens 30 s). Ohne Clips: 8 s Profilbild vor dem Kanalbanner.
 - Mehrere Shoutouts werden gesammelt und nacheinander gezeigt.
 - Kein Login, kein API-Schlüssel, keine Zusatzsoftware: reines HTML/JS in einer
@@ -213,13 +231,16 @@ Streamer.bot nutzt die eigenen angemeldeten Twitch- und Bot-Konten.
 möglichst ein Bot-Konto).
 
 1. **Overlay:** `overlay/shoutout.html` in einen beliebigen Ordner kopieren, z. B. `C:\Streaming\shoutout\`.
-   Für den Live-Ausschnitt muss die Seite per **http von `localhost`** kommen (der Twitch-Player
-   läuft nur eingebettet in eine Webseite mit bekanntem Hostnamen, nicht unter `file://`), z. B. mit
-   `python -m http.server 7000` in diesem Ordner oder einem anderen lokalen Webserver. Als lokale
-   Datei geöffnet spielt das Overlay immer Clips.
+   Für den Ausschnitt aus Stream oder VOD muss die Seite per **http von `localhost`** kommen (der
+   Twitch-Player läuft nur eingebettet in eine Webseite mit bekanntem Hostnamen, nicht unter `file://`),
+   z. B. mit `python -m http.server 7000` in diesem Ordner oder einem anderen lokalen Webserver. Als
+   lokale Datei geöffnet spielt das Overlay immer Clips.
 2. **OBS:** Szene `_Shoutout` mit einer *Browser*-Quelle anlegen:
    - URL `http://localhost:7000/shoutout.html` (oder *Lokale Datei* → `shoutout.html`, dann nur Clips)
-   - Breite 760, Höhe 640 (Karte 640 px plus 60 px Rand für den Schatten)
+   - Breite 760, Höhe **1040**, in der Szene *Transformation bearbeiten* → *Zuschneiden* unten **400**
+     (sichtbar 760 × 640: Karte 640 px plus 60 px Rand für den Schatten). Im abgeschnittenen Teil startet
+     der Twitch-Player: Er spielt nur, wenn er in der Seite sichtbar ist, lässt sich dort also nicht
+     verstecken. Nur Clips: Höhe 640 ohne Zuschnitt reicht.
    - *Audio über OBS steuern* an, damit der Clip-Ton im Mixer erscheint
    - die Szene `_Shoutout` als Quelle in die Live-Szenen einbinden und positionieren.
 3. **Streamer.bot:**
@@ -238,14 +259,15 @@ möglichst ein Bot-Konto).
 
 | Parameter | Standard | Wirkung |
 |---|---|---|
-| `type=live\|clip` | `live` | `live`: Ausschnitt aus dem laufenden Stream, Clip wenn der Kanal offline ist; `clip`: immer ein Clip |
-| `live=<s>` | 20 | Länge des Live-Ausschnitts |
+| `type=live\|vod\|clip` | `live` | `live`: neuester Clip von heute, sonst Ausschnitt aus dem laufenden Stream, sonst aus dem letzten VOD, sonst ein Top-Clip; `vod`: überspringt den laufenden Stream; `clip`: nur Top-Clips |
+| `live=<s>` | 20 | Länge des Ausschnitts aus Stream oder VOD |
 | `lang=de\|en` | `de` | Sprache des Overlays (Aufrufe, Datum, Text ohne Clips, Spielname) |
 | `test=<login>` | – | spielt beim Laden einen Shoutout ab (auch im normalen Browser) |
 | `max=<s>` | 30 | maximale Clip-Länge |
 | `min=<s>` | 10 | kürzere Clips nur, wenn der Kanal keine längeren hat |
 | `noclip=<s>` | 8 | Anzeigedauer ohne Clips |
-| `volume=<0..1>` | 0.8 | Lautstärke von Clip und Live-Ausschnitt |
+| `volume=<0..1>` | 0.8 | Lautstärke von Clip und Ausschnitt |
+| `debug` | – | zeigt die letzten Logzeilen im Rand über der Karte |
 | `ws=<url>` | `ws://127.0.0.1:8080/` | Streamer.bot-WebSocket |
 
 ### Testen
@@ -261,10 +283,13 @@ möglichst ein Bot-Konto).
 - Das Overlay nutzt den **öffentlichen GraphQL-Endpunkt** von Twitch mit der Client-ID der
   Twitch-Website (ohne Login). Das ist keine offizielle API; Twitch kann sie jederzeit ändern.
 - Clips werden direkt vom CDN von Twitch abgespielt.
-- Der Live-Ausschnitt nutzt den offiziellen eingebetteten Twitch-Player. Er startet stumm und schaltet
-  den Ton erst ein, wenn der Stream läuft, damit Werbung oder Hinweise davor nicht zu hören sind;
-  startet der Stream nicht binnen 15 s (offline, Werbung, Hinweis auf nicht jugendfreie Inhalte),
-  spielt das Overlay stattdessen einen Clip.
+- Der Ausschnitt nutzt den offiziellen eingebetteten Twitch-Player. Werbung erkennt das Overlay an der
+  Latenz zum Broadcaster (bei Werbung 0); auf Pre-Roll-Werbung wartet es bis zu 45 s (VOD: 30 s), danach
+  nimmt es das VOD bzw. einen Clip. Der Shoutout kann also bis zu ~45 s nach dem Auslösen erscheinen.
+- Kanäle mit Inhaltskennzeichnung können einen Hinweis („möglicherweise nicht für dich geeignet“) mit
+  Klick zeigen, den das Overlay nicht erkennen kann. Abhilfe sollte sein: einmal in einem OBS-Browser-Dock bei
+  Twitch anmelden und die bevorzugten Inhalte passend einstellen (OBS teilt die Cookies mit den
+  Browserquellen; nicht getestet).
 
 ### Lizenz
 
