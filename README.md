@@ -149,9 +149,9 @@ recommended, a bot account).
 - The excerpt uses the official embedded Twitch player. Ads are detected by the player's latency
   to the broadcaster (0 during ads); the overlay waits up to 45 s for a pre-roll (VOD: 30 s), then
   falls back to the VOD or a clip. So the shoutout may appear up to ~45 s after the trigger.
-- Channels with content classification labels can show a notice ("may not be suitable…") that
-  needs a click; the overlay cannot detect it. Logging in to Twitch once in an OBS browser dock
-  with suitable content preferences should avoid it (OBS shares the cookies with browser sources; not tested).
+- Content classification labels (e.g. ViolentGraphic): the embedded player shows a notice that needs a
+  click. The overlay queries the labels of the running stream and the last VOD and skips a labelled
+  one (clip instead). If the query fails, it behaves as before.
 
 ### License
 
@@ -286,10 +286,9 @@ möglichst ein Bot-Konto).
 - Der Ausschnitt nutzt den offiziellen eingebetteten Twitch-Player. Werbung erkennt das Overlay an der
   Latenz zum Broadcaster (bei Werbung 0); auf Pre-Roll-Werbung wartet es bis zu 45 s (VOD: 30 s), danach
   nimmt es das VOD bzw. einen Clip. Der Shoutout kann also bis zu ~45 s nach dem Auslösen erscheinen.
-- Kanäle mit Inhaltskennzeichnung können einen Hinweis („möglicherweise nicht für dich geeignet“) mit
-  Klick zeigen, den das Overlay nicht erkennen kann. Abhilfe sollte sein: einmal in einem OBS-Browser-Dock bei
-  Twitch anmelden und die bevorzugten Inhalte passend einstellen (OBS teilt die Cookies mit den
-  Browserquellen; nicht getestet).
+- Inhaltskennzeichnungen (z. B. ViolentGraphic): Der eingebettete Player zeigt dann einen Hinweis, der einen
+  Klick braucht. Das Overlay fragt die Kennzeichnungen des laufenden Streams und des letzten VODs ab und
+  überspringt Gekennzeichnetes (dann Clip). Schlägt die Abfrage fehl, verhält es sich wie bisher.
 
 ### Lizenz
 

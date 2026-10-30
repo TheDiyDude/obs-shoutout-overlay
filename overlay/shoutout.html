@@ -271,6 +271,33 @@ async function fetchStreamer(login) {
   };
 }
 
+// Inhaltskennzeichnungen (laufender Stream, letztes VOD). Der eingebettete Player zeigt bei
+// gekennzeichneten Inhalten einen Klick-Hinweis, den im Stream niemand bestätigen kann (2026-10-30
+// beim VOD von randvieh, vorher zarbex) – dann Clip statt Stream/VOD. Jede Abfrage einzeln: schlägt
+// eine fehl (Feld unbekannt, Fehler), gilt sie als unbekannt und ändert nichts.
+async function fetchLabels(login) {
+  const l = JSON.stringify(login);
+  const ids = list => (list || []).map(x => x.id);
+  const probes = {
+    stream: [`query { user(login: ${l}) { stream { contentClassificationLabels { id } } } }`,
+             u => ids(u.stream?.contentClassificationLabels)],
+    vod: [`query { user(login: ${l}) { videos(first: 1, type: ARCHIVE, sort: TIME) { edges { node {
+             contentClassificationLabels { id } } } } } }`,
+          u => ids(u.videos?.edges?.[0]?.node?.contentClassificationLabels)],
+  };
+  const result = {};
+  await Promise.all(Object.entries(probes).map(async ([key, [query, pick]]) => {
+    try { result[key] = pick((await gql(query)).user); }
+    catch (e) { result[key] = null; log('Kennzeichnung', key, 'unbekannt:', e.message.slice(0, 80)); }
+  }));
+  log('Kennzeichnung Stream/VOD:', ['stream', 'vod']
+    .map(k => result[k] === null ? '?' : result[k].join(',') || '-').join(' / '));
+  return {
+    live: !!result.stream?.length,
+    vod: !!result.vod?.length,
+  };
+}
+
 function clipUrl(clip) {
   const q = clip.videoQualities;
   const pick = q.find(v => v.quality === '720') || q.find(v => v.quality === '1080') || q[0];
@@ -403,8 +430,10 @@ async function show(so) {
   log('Shoutout für', login);
 
   let info;
+  const labelsPromise = TYPE !== 'clip' ? fetchLabels(login) : Promise.resolve({ live: false, vod: false });
   try { info = await fetchStreamer(login); }
   catch (e) { log('Twitch-Abfrage fehlgeschlagen:', e.message); info = null; }
+  const labels = await labelsPromise;
 
   const user = info?.user;
   // Kette: neuester Clip von heute → laufender Stream → letztes VOD → Clip (type=clip: nur Clip wie früher)
@@ -439,7 +468,9 @@ async function show(so) {
     $('media').classList.remove('noclip');
     $('media').classList.add('live');
     try {
-      if (stream && await startLive(user.login)) {
+      if (stream && labels.live) {
+        log('Stream mit Inhaltskennzeichnung, überspringe ihn');
+      } else if (stream && await startLive(user.login)) {
         $('title').textContent = stream.title || '';
         $('views').textContent = fmtViewers(stream.viewersCount || 0);
         $('date').textContent = '';
@@ -448,7 +479,9 @@ async function show(so) {
       } else if (stream) {
         log('Live-Stream startet nicht (Werbung zu lang, Sperre?)');
       }
-      if (!live && vod && await startVod(vod)) {
+      if (!live && vod && labels.vod) {
+        log('VOD mit Inhaltskennzeichnung, überspringe es');
+      } else if (!live && vod && await startVod(vod)) {
         $('title').textContent = vod.title || '';
         $('views').textContent = fmtViews(vod.viewCount || 0);
         $('date').textContent = fmtDate(vod.createdAt);
